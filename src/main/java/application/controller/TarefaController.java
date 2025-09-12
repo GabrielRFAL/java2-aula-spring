@@ -55,4 +55,32 @@ public class TarefaController {
         return "update";
     }
 
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public String update(@RequestParam("id") long id, @RequestParam("tarefa") String nome) {
+        Optional<Tarefa> resultado = tarefaRepository.findById(id);
+        if (resultado.isPresent()) {
+            resultado.get().setNome(nome);
+            tarefaRepository.save(resultado.get());
+        }
+
+        return "redirect:/tarefas/list";
+    }
+
+    @RequestMapping("/delete")
+    public String delete(@RequestParam("id") long id, Model ui) {
+        Optional<Tarefa> resultado = tarefaRepository.findById(id);
+
+        if (resultado.isEmpty()) {
+            return "redirect:/tarefas/list";
+        }
+
+        ui.addAttribute("tarefa", resultado.get());
+        return "delete";
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public String delete(@RequestParam("id") long id) {
+        tarefaRepository.deleteById(id);
+        return "redirect:/tarefas/list";
+    }
 }
